@@ -25,6 +25,3 @@ class library:
 	def addCar(self, *args):
 		self.cars.append(comp.car(*args))
 		return
-    
-    
-    

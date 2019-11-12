@@ -66,8 +66,6 @@ def random_config(domains, n_cars):
 
 def box_2_kitti_format(box):
     '''Transform box for KITTI label format'''
-#这个函数是将box格式的数据转化成KITTI格式的数据，对应的方式是
-#[x,y,w,h]转化成[left,top,right,bot]的格式。
     x = box[0]
     y = box[1]
     w = box[2]
@@ -80,9 +78,7 @@ def box_2_kitti_format(box):
 
 def kitti_2_box_format(label):
 
-'''Transform KITTI label format to box'''
-#这个函数是将KITTI数据格式的数据转化成box格式的数据，也就是对应的
-#left,top,right,bot格式的数据转化成为x,y,w,h这种格式的数据。
+    '''Transform KITTI label format to box'''
     xl = label[0]
     yt = label[1]
     xr = label[2]
@@ -136,9 +132,8 @@ def kitti_2_box_format(label):
 #     return area_cap / float(min_area)
 
 
-
-#下面的两个函数就是将生成的图片和标签保存的脚本，第一个脚本是保存图片的函数，但是这
-#这个保存图片的函数一次性的只能保存一张图片
+#下面是两个分别是对生成的图片和对应的标签进行存储的
+#将生成的图片和标签进行存储
 def save_image(img, file_name, path_data_set):
     '''Save image and label'''
 
@@ -148,9 +143,7 @@ def save_image(img, file_name, path_data_set):
 
 def save_label(ground_boxes, file_name, path_data_set):
     '''Save label'''
-#这个函数是ground_boxes的函数，这个函数对应的是车辆的位置信息，另外
-#这个位置信息对应的是一个数组，另外，数组中的每一个都是对应的box格式的
-#中心坐标x，中心坐标y，宽度w，长度h,这四个参数。
+
     f = open(path_data_set + 'labels/' + file_name + '.txt', 'w')
 
     if len(ground_boxes) > 0:

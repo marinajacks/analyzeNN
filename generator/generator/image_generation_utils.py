@@ -6,16 +6,16 @@ from collections import namedtuple
 import numpy as np
 import cv2
 
-bb = namedtuple('bb', ['lr', 'tr', 'tl', 'll'])   #low right, top right,top left,low left
-scale = namedtuple('scale', ['front', 'back'])    #对应的分别是前进
+bb = namedtuple('bb', ['lr', 'tr', 'tl', 'll'])
+scale = namedtuple('scale', ['front', 'back'])
 fg_obj = namedtuple('fg_obj', 'x y fg_id')
 
-unit_box = bb([1, 0], [1, 1], [0, 1], [0, 0])   #这个对应的应该是一个图片的四个
-#角落的坐标
+unit_box = bb([1, 0], [1, 1], [0, 1], [0, 0])
 
 bb_to_array = lambda bbox: np.array([r for r in bbox])
 
 # Tranform 2d box-sample into trapezoid (car displacement area)
+# 把一个2d的 box-sample转化为一个trapezoid(car的位置移动)
 def unit_to_bb_h(bounding_box, ld_box=unit_box):
 
     bbox = bb_to_array(bounding_box)

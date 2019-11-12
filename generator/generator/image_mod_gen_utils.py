@@ -5,12 +5,11 @@ This file has all the basic image modification primitives
 from PIL import Image, ImageEnhance
 from image_generation_utils import *
 
-#这个函数主要是修改图片的比例，其中img是图片信息，scale是缩放或者是扩大的
+#这个函数主要用来修改图片的尺寸
 def scale_img(img, scale):
     return img.resize((np.array(img.size) * scale).astype(int))
 
-
-#这个函数的主要目的就是对图片进行缩放和修改，估计是后文中对car的处理的问题
+#这个函数可得到,对应的图片以及
 def scale_get_loc(img, scale, centroid):
     scaled_img = scale_img(img, scale)
     top_right_loc = (np.array(centroid) - \
@@ -18,7 +17,9 @@ def scale_get_loc(img, scale, centroid):
     return scaled_img, top_right_loc
 
 
-# Update with brightness, sharpness, contrast and color
+#Update with brightness, sharpness, contrast and color
+#这个函数可以做的就是对图片的亮度，锐度，对比度和颜色进行调整，输入的image_data是
+#图片的位置
 def modify_image_bscc(image_data, brightness, sharpness, contrast, color):
     brightness_mod = ImageEnhance.Brightness(image_data)
     image_data = brightness_mod.enhance(brightness)
@@ -34,9 +35,9 @@ def modify_image_bscc(image_data, brightness, sharpness, contrast, color):
 
     return image_data
 
-# Get samples and generate image
-# x is the lateral displacement
-# y is the vertical displacement
+# Get samples and generate image 采样和生成
+# x is the lateral displacement 水平偏移
+# y is the vertical displacement 垂直偏移
 def gen_comp_img(library, fg_objects, bg_id=0, brightness=1., sharpness=1.,\
                  contrast= 1., color=1.):
     background = library.background_objects[bg_id]
@@ -62,9 +63,7 @@ def gen_comp_img(library, fg_objects, bg_id=0, brightness=1., sharpness=1.,\
     pic_dict['contrast_sample'] = contrast
     pic_dict['color_sample'] = color
 
-    # Add foreground images，从这里可以看出，增加的是前面的背景图片，
-    #前景主要是车辆信息，这部分涉及到车辆的缩小，x的位置移植和y的位置的移植
-    #还有就是前面的采样和渲染的数据
+    # Add foreground images
     boxes = []
     for i, fg_i in zip(range(len(fg_objects)), fg_objects):
         x, y, fg = fg_i.x, fg_i.y, fg_i.fg_id
@@ -78,10 +77,10 @@ def gen_comp_img(library, fg_objects, bg_id=0, brightness=1., sharpness=1.,\
         scaled_img, top_right_loc = scale_get_loc(foreground.image, scale_fg, \
                                                   sample_conv_space)
 
-        # paste car  把车辆信息放里边去
+        # paste car
         background_no_alpha.paste(scaled_img, tuple(top_right_loc), scaled_img)
 
-        # store labels  存储的是车辆的ground truth信息
+        # store labels
         int_centroid = list(sample_conv_space.astype(int))
         list_size = list(scaled_img.size)
 

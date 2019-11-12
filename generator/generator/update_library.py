@@ -7,8 +7,6 @@ import pickle
 import numpy as np
 from lib_obj import *
 
-
-
 BACK_ORIENT = -np.pi/2
 FRONT_ORIENT = np.pi/2
 
@@ -17,7 +15,7 @@ road_images= [{'road_path':'./pics/roads/desert.jpg', \
               {'road_path':'./pics/roads/countryside.jpg', \
                'road_type':'Countryside Road'},
               {'road_path':'./pics/roads/city.jpg', \
-               'road_type': 'City Road' },
+               'road_type': 'City Road'},
               {'road_path':'./pics/roads/cropped_desert.jpg', \
                'road_type':' Cropped Desert Road'}]
 for i in range(134, 182):
@@ -179,56 +177,28 @@ configs_file = 'scene_configs_py2'
 convert_sample_to_int = lambda sample, num_elems:  int(sample*(num_elems+1))
 
 
-
-
-
-
-#这个函数是将图片打开的函数
-
-def update_library(trapezoid,scale):
+def update_library():
     Library = lib_object()
-    im_data = Image.open(road_images[10]['road_path'])
-    #trapezoid=bb([300,500], [400,500], [400,400], [300,400])
-    #scale = namedtuple('scale', ['front', 'back'])    #对应的分别是前进
-    
-    #scale = scale(front=1.5,back=1)
-    
-    create_bound = bb(trapezoid[0], trapezoid[1], trapezoid[2], \
+    with open(configs_file, 'rb') as f:
+        configs = pickle.load(f)
+
+    for i in range(len(road_images)):
+        elem = configs[i]
+        im_data = Image.open(road_images[i]['road_path'])
+        if elem != []:
+            trapezoid = elem[0]
+            scaling = elem[1]
+            create_bound = bb(trapezoid[0], trapezoid[1], trapezoid[2], \
                               trapezoid[3])
-    create_scale = scale
-    
-    Library.add_backgrounds(im_data=im_data, add_details=road_images[10], \
+            create_scale = scale(scaling[0], scaling[1])
+            Library.add_backgrounds(im_data=im_data, add_details=road_images[i], \
                                     bounding_boxes=create_bound, \
                                     scale=create_scale)
-    
-    
-    car=car_images[10]
-    im_data=Image.open(car['car_path'])
-    Library.add_foregrounds(im_data=im_data,add_details=car)
+        else:
+            Library.add_backgrounds(im_data=im_data, add_details=road_images[i])
+
+    for car in car_images:
+        im_data=Image.open(car['car_path'])
+        Library.add_foregrounds(im_data=im_data,add_details=car)
+
     return Library
-
-
-
-'''
-def scale_img(img, scale):
-    return img.resize((np.array(img.size) * scale).astype(int))
-    
-    
-trapezoid=bb([1, 0], [1, 1], [0, 1], [0, 0])
-
-scale = [1,1]
-
-
-
-p=r'D:\project\analyzeNN\scene_configs_py2'
-f=open(p,'rb')
-pickle.load(f)
-
-'''
-
-
-
-def ld_to_bb_sample(sample, h):
-    sample = np.float32([sample]).reshape(-1, 1, 2)
-    con = cv2.perspectiveTransform(sample, h)
-    return np.array(list(con[0][0]))

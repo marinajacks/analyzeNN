@@ -1,5 +1,5 @@
 from gen_utils import *
-#import squeezedet as nn
+import squeezedet as nn
 
 def edge_2_cent(box):
     xl = box[0]
@@ -67,10 +67,10 @@ def precision_recall(preds, gt_boxes, iou_tresh):
 
 
 
-#checkpoint = '/home/tommaso/analyzeNN/data/train_0/checkpoint/train/model.ckpt-5000'
-#net = nn.init(checkpoint)
+checkpoint = '/home/tommaso/analyzeNN/data/train_0/checkpoint/train/model.ckpt-5000'
+net = nn.init(checkpoint)
 
-#tmp_img_file_name = "/home/tommaso/analyzeNN/data/test/images/h_m_0_3_000006.png"
+tmp_img_file_name = "/home/tommaso/analyzeNN/data/test/images/h_m_0_3_000006.png"
 
 gt_b_1 = edge_2_cent([641, 181, 675, 209])
 gt_b_2 = edge_2_cent([598, 178, 644, 214])
@@ -79,4 +79,9 @@ gt_b_3 = edge_2_cent([514, 162, 604, 236])
 
 
 gt_boxes = [gt_b_1, gt_b_2, gt_b_3]
-#(boxes,probs,cats) = nn.classify(tmp_img_file_name,net)
+(boxes,probs,cats) = nn.classify(tmp_img_file_name,net)
+
+
+
+
+
