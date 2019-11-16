@@ -34,8 +34,11 @@ def random_sample(typ, domain, n_samples):
 
 def random_config(domains, n_cars):
 #     print("domains is : ", domains)# [[52, 72], [1, 19], [0, 1], [0.35, 1], [0.8, 1.2], [0.7, 1]]
-#     print("n_cars is : ", n_cars)
+#     print("n_cars is : ", n_cars)#这里的n_cars其实是对应的车辆的个数，显然为了
+#     我们计算的方便，选择n_cars=1是一个比较好的方式。但是这里的domain是什么呢？
     # Scene and cars
+
+#另外，这个函数显然是生成随机的参数的数据，其实我们并不需要特别的生成这种，只是关键的数据在于
     sample = [random_sample('int',domains[0],1)]
     sample += [random_sample('int',domains[1],n_cars)]
     # Modifications
@@ -185,7 +188,8 @@ def pad_sample(conf):
     return pt
 
 def check_perspective(xs, ys, x_eps, y_eps):
-    '''Check distance between sampled points'''
+    '''Check distance between sampled points，这部分的工作在我们进行的时候，其实是
+    不需要的，因为这部分的数据并不需要'''
     for yi in range(len(ys)):
         for yj in range(yi+1,len(ys)):
             if abs(ys[yi] - ys[yj]) < y_eps:

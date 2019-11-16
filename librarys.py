@@ -1,11 +1,24 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Nov 12 20:37:09 2019
+
+@author: hello
+"""
+
+
+
+
 '''
 Populate the library with the images and information from what was collected
 using the new implementation
 '''
 
-import pickle
 import numpy as np
 from lib_obj import *
+from collections import namedtuple
+from PIL import Image, ImageEnhance
+
+
 
 BACK_ORIENT = -np.pi/2
 FRONT_ORIENT = np.pi/2
@@ -15,15 +28,14 @@ road_images= [{'road_path':'./pics/roads/desert.jpg', \
               {'road_path':'./pics/roads/countryside.jpg', \
                'road_type':'Countryside Road'},
               {'road_path':'./pics/roads/city.jpg', \
-               'road_type': 'City Road'},
+               'road_type': 'City Road' },
               {'road_path':'./pics/roads/cropped_desert.jpg', \
                'road_type':' Cropped Desert Road'}]
 for i in range(134, 182):
     road_images.append({'road_path':'./pics/roads/forest/0000000'\
                                + str(i) + '.png', \
                         'road_type':'Forest Road'})
-
-
+    
 road_images.append({'road_path':'./pics/roads/desert_kitti.png', \
                'road_type':'Desert Road', 'road_id':52, 'background_color': 'brown light, blue light', 'environment': 'desert'})
 road_images.append({'road_path':'./pics/roads/city_kitti.png',\
@@ -172,34 +184,28 @@ car_images = [{'car_path':'./pics/cars/bmw_gray_front_kitti.png', 'type':'BMW Ki
                'car_id':36, 'car_category': 'car', 'car_color': 'blue light', 'car_orientation': FRONT_ORIENT }
               ]
 
-configs_file = 'scene_configs_py2'
-
-convert_sample_to_int = lambda sample, num_elems:  int(sample*(num_elems+1))
-#从下面的程序中来看，这个文件看来应该是存储的车辆的位置以及需要缩小或者是
-#放大的多少的情况。
+#这个函数是将图片打开的函数
 
 def update_library():
     Library = lib_object()
-    with open(configs_file, 'rb') as f:
-        configs = pickle.load(f)
-#由于我们其实仅仅需要一个
-    for i in range(len(road_images)):
-        elem = configs[i]
-        im_data = Image.open(road_images[i]['road_path'])
-        if elem != []:
-            trapezoid = elem[0]
-            scaling = elem[1]
-            create_bound = bb(trapezoid[0], trapezoid[1], trapezoid[2], \
-                              trapezoid[3])
-            create_scale = scale(scaling[0], scaling[1])
-            Library.add_backgrounds(im_data=im_data, add_details=road_images[i], \
-                                    bounding_boxes=create_bound, \
-                                    scale=create_scale)
-        else:
-            Library.add_backgrounds(im_data=im_data, add_details=road_images[i])
-
+    #由于我们的实际仅仅需要一张背景，这里不做过多的选择
+    bb = namedtuple('bb', ['lr', 'tr', 'tl', 'll'])
+    trapezoid=bb([620,200], [750,350], [400,350], [610,200])
+    #而且，这里我们值得注意的就是bb的定义是，案例如下所示
+    #unit_box = bb([1, 0], [1, 1], [0, 1], [0, 0])#这个对应的应该是一个图片的四个
+    #bb = namedtuple('bb', ['lr', 'tr', 'tl', 'll'])#low right, top right,top left,low left
+    #另外，从这里我们可以确定，车辆的位置信息与scale关系紧密
+    scale = namedtuple('scale', ['front', 'back'])
+    scale = scale(front=0.1,back=1) 
+    
+    im_data = Image.open(road_images[59]['road_path'])
+    create_bound = bb(trapezoid[0], trapezoid[1], trapezoid[2],trapezoid[3])
+    create_scale = scale
+    Library.add_backgrounds(im_data=im_data, add_details=road_images[59], \
+                            bounding_boxes=create_bound,scale=create_scale)
     for car in car_images:
         im_data=Image.open(car['car_path'])
         Library.add_foregrounds(im_data=im_data,add_details=car)
-
     return Library
+
+
